@@ -10,10 +10,12 @@ conectarBD();
 const app = express();
 const port = process.env.PORT
 
-
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Reemplaza con la URL de tu frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
 app.use(express.json());
-app.use("/auth", authRoutes);
+app.use("/api", authRoutes);
 
 app.listen(port, () => {
   console.log(`SERVIDOR ONLINE ${port}`);

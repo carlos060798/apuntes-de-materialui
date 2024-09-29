@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import User from '../Data/models/user';
 import bcrypt from 'bcryptjs';
 import Jwt from '../midlewares/auth/jwt';
+import Channel from '../Data/models/chanel';
 
 class AuthController {
 
@@ -53,11 +54,16 @@ class AuthController {
 
         try {
 
-            const user = await User.create(req.body);
+            const chanel=  await Channel.create({})
+
+            const user = await User.create({
+                channel: chanel._id,
+                ...req.body
+            });
 
             user.password = await bcrypt.hash(user.password, 10);
 
-            await user.save();
+            Promise.all([user.save(), chanel.save()])
             const token = Jwt.generateToken({ id: user._id });
 
             return res.send({

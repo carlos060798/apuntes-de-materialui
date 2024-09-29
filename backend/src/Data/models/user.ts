@@ -1,4 +1,5 @@
 import mongoose from "mongoose"; 
+import chanel from "./chanel";
 
 const userSchema = new mongoose.Schema({
  email: {
@@ -14,6 +15,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+
+    channel: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Channel"
+     
+    },
+    followedChannels: {
+        type: [{type:mongoose.Schema.Types.ObjectId ,ref: "Channel"}],
+    } 
+    
 })
 
 
