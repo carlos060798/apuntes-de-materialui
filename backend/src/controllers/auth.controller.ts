@@ -55,11 +55,13 @@ class AuthController {
         try {
 
             const chanel=  await Channel.create({})
+            
 
             const user = await User.create({
                 channel: chanel._id,
                 ...req.body
             });
+            chanel.user= user._id
 
             user.password = await bcrypt.hash(user.password, 10);
 
