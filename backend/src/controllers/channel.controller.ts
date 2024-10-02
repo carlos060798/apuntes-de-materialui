@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
 import Channel from "../Data/models/chanel";
 import User from "../Data/models/user";
-import ChannelRoutes from '../routes/chanenelRoutes';
 
 class ChannelController {
-  public static async getChannel(req:Request,res: Response) {
+  public static async getChannel(req: Request, res: Response) {
     const channelId = req.params.idchannel;
 
     // Simulate a database call to fetch the channel data
@@ -48,7 +47,7 @@ class ChannelController {
           title: canal.title,
           avatarUrl: canal.avatarUrl,
           username: canal.user?.username || "Unknown",
-          isOnline: false, 
+          isOnline: false,
         };
       });
 
@@ -58,8 +57,76 @@ class ChannelController {
     }
   }
 
+  public static async followChannel(req: Request, res: Response) {
+    const userid = req.user?._id
+    const { channelid } = req.body;
+    try {
+      const userData = await User.findById(userid, { followedChannels: 1 });
 
+      if (userData?.followedChannels.includes(channelid)) {
+        return res.status(400).send({ msg: "Ya sigues a este canal" })
+      }
+
+      userData?.followedChannels.push(channelid);
+      await userData?.save();
+
+
+      return res.send({ msg: "Canal seguido correctamente" })
+    } catch (error) {
+      return res.status(500).send({ msg: "Error al seguir el canal", error });
+
+
+    }
   }
+  public static async unfollowChannel(req: Request, res: Response) {
+    const userid = req.user?._id;
+    const { channelid } = req.body;
+
+    try {
+      const userData = await User.findById(userid, { followedChannels: 1 });
+
+      if (!userData) {
+        return res.status(404).send({ msg: "Usuario no encontrado" });
+      }
+
+      if (!userData.followedChannels.includes(channelid)) {
+        return res.status(400).send({ msg: "No sigues a este canal" });
+      }
+
+      // Filtrar el canal que el usuario quiere dejar de seguir
+      userData.followedChannels = userData.followedChannels.filter(id => id.toString() !== channelid);
+
+      await userData.save();
+
+      return res.send({ msg: "Dejaste de seguir el canal correctamente" });
+    } catch (error) {
+      return res.status(500).send({ msg: "Error al dejar de seguir el canal", error });
+    }
+  }
+
+  // Método para listar los canales que sigue el usuario
+  public static async channelsLikes(req: Request, res: Response) {
+
+    const userid = req.user?._id;
+
+    try {
+      // Obtener el usuario con los canales que sigue y hacer populate para obtener más información de los canales
+      const userData = await User.findById(userid).populate("followedChannels", "title avatarUrl description");
+
+      if (!userData) {
+        return res.status(404).send({ msg: "Usuario no encontrado" });
+      }
+      const { followedChannels } = userData;
+      return res.send(followedChannels);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ msg: "Error al obtener los canales seguidos", error });
+    }
+  }
+
+
+
+}
 
 
 export default ChannelController;
