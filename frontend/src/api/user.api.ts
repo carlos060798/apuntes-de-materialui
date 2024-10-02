@@ -11,6 +11,8 @@ export const  loginUser= async (dataLogin:IUserLogin) => {
     try {
         const {data}= await api.post("/login", dataLogin);
         console.log(data);
+        localStorage.setItem('token', data.token);
+
         return data;
     } catch (error) {
         console.error("Error during login", error);
