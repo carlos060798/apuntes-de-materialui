@@ -14,7 +14,9 @@ const port = process.env.PORT
 
 app.use(cors({
   origin: 'http://localhost:5173', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  //methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Métodos permitidos
+
 }));
 app.use(express.json());
 app.use("/api", authRoutes);

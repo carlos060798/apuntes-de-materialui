@@ -4,11 +4,14 @@ import { ReactNode } from "react";
 import LayautAuth from "../layouts/LayautAuth";
 
 import LayautApp from "../layouts/LayautApp";
-import DasboarPage from "../Pages/DasboarPage";
+import DashboardPage from "../Pages/DasboarPage";
 import PageNotFound from "../Pages/PageNotFound";
 import HomePage from "../Pages/HomePage";
 import LoginForm from "../componets/Login";
 import RegisterForm from "../componets/Register";
+import SettingPage from "../Pages/SettingPage";
+import ChannelsList from "../componets/Channels";
+import Channel from "../componets/Channel";
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ element }: { element: ReactNode }) => {
@@ -39,7 +42,10 @@ export default function Router() {
           <Route path="/register" element={<AuthRedirect element={<RegisterForm/>} />} />
         </Route>
         <Route element={<ProtectedRoute element={<LayautApp />} />}>
-          <Route path="/dashboard" element={<DasboarPage />} />
+          <Route path="/dashboard" element={<DashboardPage/>} />
+          <Route path="/settings" element={<SettingPage/>} />
+          <Route path="/channels" element={<ChannelsList/>} />
+          <Route path="/channel/:id" element={<Channel/>} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>

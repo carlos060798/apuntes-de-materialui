@@ -117,6 +117,8 @@ class ChannelController {
         return res.status(404).send({ msg: "Usuario no encontrado" });
       }
       const { followedChannels } = userData;
+
+      console.log(followedChannels);
       return res.send(followedChannels);
     } catch (error) {
       console.log(error);
