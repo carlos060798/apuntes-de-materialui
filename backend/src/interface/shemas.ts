@@ -28,9 +28,20 @@ const channelUpdateSchema = Joi.object({
 });
 
 const passwordUpdateShema = Joi.object({
-
+    password : Joi.string().min(6).max(30).required(),
     newPassword: Joi.string().min(6).max(30).required(),
 });
-export { registerSchema, loginSchema, channelDetailsSchema, channelUpdateSchema, passwordUpdateShema };
+
+const updateUserSchema = Joi.object({
+    username: Joi.string().min(3).max(30),
+    email: Joi.string().email()
+});
+
+const  channelShema = Joi.object({
+    title: Joi.string().min(3).max(30).required(),
+    description: Joi.string().min(10).max(100).required(),
+    avatarUrl: Joi.string().uri().required()
+})
+export { channelShema,registerSchema, loginSchema, channelDetailsSchema, channelUpdateSchema, passwordUpdateShema,updateUserSchema };
 
 

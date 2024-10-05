@@ -1,15 +1,15 @@
-import { Router } from "express"; 
+import { Router } from "express";
 import AuthController from "../controllers/auth.controller";
 import { validateRequest } from "../midlewares/auth/validator";
-import { registerSchema,loginSchema } from "../interface/shemas";
-import Jwt from "../midlewares/auth/jwt";
+import { registerSchema, loginSchema, updateUserSchema } from "../interface/shemas";
+import { authenticate } from "../midlewares/auth/autheticate";
 
-const  router = Router();
+const router = Router();
 
-router.post('/register',validateRequest( registerSchema), AuthController.register);
-router.post('/login',validateRequest( loginSchema ), AuthController.login);
+router.post('/register', validateRequest(registerSchema), AuthController.register);
+router.post('/login', validateRequest(loginSchema), AuthController.login);
 
-
+router.put('/user',authenticate, validateRequest(updateUserSchema), AuthController.uptdateUser);
 
 
 const authRoutes = router;

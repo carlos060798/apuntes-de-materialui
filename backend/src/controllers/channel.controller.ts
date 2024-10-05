@@ -3,6 +3,18 @@ import Channel from "../Data/models/chanel";
 import User from "../Data/models/user";
 
 class ChannelController {
+  public static async  createChannel(req: Request, res: Response) {
+    const user = req.user?._id;
+    console.log("data", req.body);
+    const { title, description,avatarUrl} = req.body;
+    try{
+    const newChannel = await Channel.create({ title, description, user,avatarUrl });
+    await newChannel.save();
+    res.status(201).send({ msg: "Canal creado correctamente", newChannel });
+    } catch (error) {
+      res.status(500).send({ msg: "Error al crear el canal", error });
+    }
+  }
   public static async getChannel(req: Request, res: Response) {
     const channelId = req.params.idchannel;
 

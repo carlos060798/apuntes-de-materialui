@@ -10,7 +10,6 @@ import HomePage from "../Pages/HomePage";
 import LoginForm from "../componets/Login";
 import RegisterForm from "../componets/Register";
 import SettingPage from "../Pages/SettingPage";
-import ChannelsList from "../componets/Channels";
 import Channel from "../componets/Channel";
 
 // Componente para rutas protegidas
@@ -44,7 +43,6 @@ export default function Router() {
         <Route element={<ProtectedRoute element={<LayautApp />} />}>
           <Route path="/dashboard" element={<DashboardPage/>} />
           <Route path="/settings" element={<SettingPage/>} />
-          <Route path="/channels" element={<ChannelsList/>} />
           <Route path="/channel/:id" element={<Channel/>} />
         </Route>
         <Route path="*" element={<PageNotFound />} />

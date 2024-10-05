@@ -5,7 +5,26 @@ const api = axios.create({
 });
 
 
+export const createChannel = async (dataChanel) => {
+    const token = localStorage.getItem("token");
+    console.log("Token:", token);
 
+    if (!token) {
+        console.error("No token found in localStorage");
+        return;
+    }
+
+    try {
+        const {data} = await api.post("/create",  dataChanel , {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log("Channel created:", data);
+        return data;
+    } catch (error) {
+        console.error("Error during createChannel", error);
+        throw error;
+    }
+}
 
 export const getChannelsfollows = async () => {
     const token = localStorage.getItem("token");
@@ -28,18 +47,11 @@ export const getChannelsfollows = async () => {
     }
 };
 
-export const getChannelsById = async () => {
+export const getChannelsById = async (id:string) => {
 
-    const token = localStorage.getItem("token");
-    console.log("Token:", token);
-    if (!token) {
-        console.error("No token found in localStorage");
-        return;
-    }
+   
 
-    const {data}= await api.get("/follow/channels", {
-        headers: { Authorization: `Bearer ${token}` }
-    });
+    const {data}= await api.get(`/${id}`);
 
     console.log("Channels:", data);
     return data;

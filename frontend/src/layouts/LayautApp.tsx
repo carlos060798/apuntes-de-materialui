@@ -5,23 +5,25 @@ import Sidebar from '../componets/Sidebar';
 
 function LayoutApp() {
   return (
-    <div className="d-flex flex-column vh-100">
+<div className="d-flex flex-column vh-100">
       {/* Navbar arriba */}
       <div>
         <Navbar />
       </div>
 
       {/* Contenedor principal con Sidebar y contenido */}
-      <div className="d-flex flex-grow-1">
-        {/* Sidebar lateral */}
-        <div  style={{ width: '250px' }}>
-          <Sidebar />
-        </div>
+      <div className="container-fluid flex-grow-1">
+        <div className="row h-100">
+          {/* Sidebar lateral */}
+          <div className="col-12 col-md-6 col-lg-3 p-0">
+            <Sidebar />
+          </div>
 
-        {/* Contenido principal */}
-        <div className="flex-grow-1 bg-light">
-          <div className="container-fluid mt-4">
-            <Outlet />
+          {/* Contenido principal */}
+          <div className="col-12 col-md-6 col-lg-9 bg-light">
+            <div className="container-fluid mt-4">
+              <Outlet />
+            </div>
           </div>
         </div>
       </div>
