@@ -4,7 +4,7 @@ import ChannelController from '../controllers/channel.controller';
 import { authenticate } from '../midlewares/auth/autheticate';
 import { validateRequest } from '../midlewares/auth/validator';
 
-import { channelShema } from '../interface/shemas';
+import { channelShema, channelUpdateSchema } from '../interface/shemas';
 
 
 const  router = Router();
@@ -17,6 +17,7 @@ router.get('/follow/channels',authenticate,ChannelController.channelsLikes);
 router.post('/create',authenticate,validateRequest(channelShema),ChannelController.createChannel);
 router.post('/follow',authenticate,ChannelController.followChannel); 
 router.patch('/unfollow-channel',authenticate,ChannelController.unfollowChannel);
+router.put('/update/:idchannel',authenticate,validateRequest(channelUpdateSchema),ChannelController.updateChannel);
 
 
 const ChannelRoutes = router;

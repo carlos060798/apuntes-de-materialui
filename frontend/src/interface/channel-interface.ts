@@ -10,3 +10,10 @@ export interface Ichannel{
         isOnline: boolean;     
       
 }
+
+export interface IChannelUpdate{
+        title: string;        
+        avatarUrl: string;    
+        description: string;
+        isOnline: boolean;
+}

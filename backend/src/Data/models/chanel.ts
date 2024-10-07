@@ -2,7 +2,7 @@ import  moongose  from 'mongoose';
 import  {v4 as uiid} from 'uuid';
 
 const  channelSchema  =  new  moongose.Schema({  
-    isActivated:  { type:  Boolean, default:  false },
+    isActivated:  { type:  Boolean, default:  true },
     title:  { type:  String, },
     description:  { type:  String, },
     avatarUrl: { type: String, },

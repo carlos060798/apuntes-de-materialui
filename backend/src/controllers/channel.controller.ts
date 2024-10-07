@@ -36,7 +36,9 @@ class ChannelController {
         id: channelData._id,
         title: channelData.title,
         description: channelData.description,
+        avatarUrl: channelData.avatarUrl,
         username: userchanel ? userchanel.username : "Unknown",
+        isActivated: channelData.isActivated,
         isOnline,
         streamUrl,
       });
@@ -45,7 +47,34 @@ class ChannelController {
     }
   }
 
+  public static async updateChannel(req: Request, res: Response) {
+      const userid= req.user?._id;
+      const channelId = req.params.idchannel;
+      const { title, description, avatarUrl,isActivated } = req.body;
+      try {
+        const channelData = await Channel.findById(channelId);
+        if (!channelData) {
+          return res.status(404).json({ error: "Channel not found" });
+        }
+        console.log("channelData",channelData.user)
+        console.log("userid",userid);
+        if (channelData.user?.toString() !== userid?.toString()) {
+          return res.status(401).json({ error: "You are not the owner of this channel" });
+        }
 
+        const updatedChannel = {
+           title: title || channelData.title,
+           description: description || channelData.description,
+           avatarUrl: avatarUrl || channelData.avatarUrl,
+           isActivated:isActivated || channelData.isActivated,
+        }
+
+        await channelData.updateOne(updatedChannel)
+        return res.status(200).send(channelData);
+        } catch (error) {
+          return res.status(500).json({ error: "Failed to update channel" });
+        }
+  }
 
   public static async getChanels(req: Request, res: Response) {
     try {

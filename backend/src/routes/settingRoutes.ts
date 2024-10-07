@@ -7,8 +7,7 @@ import { channelUpdateSchema, passwordUpdateShema } from "../interface/shemas";
 
 const route= Router();
 
-route.get('/',authenticate,settingController.getSettings);
-route.put('/',authenticate,validateRequest(channelUpdateSchema),settingController.updateSettings);
+
 route.patch('/password',authenticate,validateRequest(passwordUpdateShema), settingController.updatePassword);
 
 const settingRoutes = route

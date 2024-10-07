@@ -12,6 +12,7 @@ export const  loginUser= async (dataLogin:IUserLogin) => {
         const {data}= await api.post("/login", dataLogin);
         console.log(data);
         localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username);
 
         return data;
     } catch (error) {
