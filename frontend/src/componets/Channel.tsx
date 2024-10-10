@@ -6,9 +6,15 @@ import { getChannelsById } from "../api/channel.api";
 import Loader from "./Loader";
 import { useState } from "react";
 import SettingChannelPage from "./SettingChannel";
+import { connectwithSocketServer } from "../sockets-client/socketCors";
+import ChatApp from "./Chat";
+
+
+
 
 function Channel() {
   const { id } = useParams<{ id: string }>();
+  connectwithSocketServer();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["channel", id],
@@ -60,6 +66,8 @@ function Channel() {
           </p>
         </div>
       </div>
+     
+<ChatApp channelid={id} />
 
       <SettingChannelPage data={data}channelId={id!} isModalOpen={isModalOpen} closeModal={closeModal} />
     </div>

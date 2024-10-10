@@ -1,17 +1,36 @@
-import  moongose  from 'mongoose';
+import mongoose from 'mongoose';
 import  {v4 as uiid} from 'uuid';
 
-const  channelSchema  =  new  moongose.Schema({  
-    isActivated:  { type:  Boolean, default:  true },
-    title:  { type:  String, },
-    description:  { type:  String, },
-    avatarUrl: { type: String, },
-    streamKey: { type: String, default: uiid() },
-    user: { type:moongose.Schema.Types.ObjectId, ref:"User"},
+const channelSchema = new mongoose.Schema({  
+    isActivated: { 
+        type: Boolean, 
+        default: true 
+    },
+    title: { 
+        type: String 
+    },
+    description: { 
+        type: String 
+    },
+    avatarUrl: { 
+        type: String 
+    },
+    streamKey: { 
+        type: String, 
+        default: uiid() 
+    },
+    user: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "User" 
+    },
     menssages: {
-        type:[{ type: moongose.Schema.Types.ObjectId, ref: 'Message' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
         default: []
-}})
+    },
+    comments: { 
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }], 
+        default: [] 
+    }
+});
 
-
-export default moongose.model('Channel', channelSchema);
+export default mongoose.model('Channel', channelSchema);
