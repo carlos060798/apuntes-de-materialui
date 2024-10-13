@@ -67,6 +67,17 @@ export const getChannels = async () => {
     return data;
      
 } 
+export const getChannelsusers = async () => {
+    const token = localStorage.getItem("token");
+
+    const  {data}= await api.get("/userchannels",{
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    console.log("Channels:", data);
+
+    return data;
+     
+} 
 
 export const followChannel = async (id:string) => {
     console.log("Siguiendo canal con ID:", id);

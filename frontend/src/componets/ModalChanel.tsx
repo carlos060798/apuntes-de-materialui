@@ -29,8 +29,8 @@ const CreateChannelModal = ({ isModalOpen, closeModal }: CreateChannelModalProps
   // Uso de useMutation para crear un canal
   const { mutate } = useMutation({
     mutationFn: createChannel,
-    onError: (error: any) => {
-      toast.error("Error al crear el canal: " + error.message);
+    onError: () => {
+      toast.error("Error al crear el canal");
       setIsSubmitting(false); // Reactivar el botón
     },
     onSuccess: () => {

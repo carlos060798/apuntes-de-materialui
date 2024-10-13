@@ -23,10 +23,8 @@ const channelSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: "User" 
     },
-    menssages: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
-        default: []
-    },
+    messages: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }], default: [] },
+
     comments: { 
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }], 
         default: [] 

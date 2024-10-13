@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authenticate } from "../midlewares/auth/autheticate";
 import settingController from "../controllers/settings.controller";
 import { validateRequest } from "../midlewares/auth/validator";
-import { channelUpdateSchema, passwordUpdateShema } from "../interface/shemas";
+import {  passwordUpdateShema } from "../interface/shemas";
 
 
 const route= Router();

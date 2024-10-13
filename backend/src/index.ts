@@ -8,6 +8,7 @@ import { conectarBD } from './Data/connection';
 import http from 'http'; // Importa http para crear el servidor
 import { registerSocketServer } from './io/Server.io';
 import commentRoutes from './routes/comment-Routes';
+import directMessageRoutes from './routes/messages-route';
 
 dotenv.config();
 conectarBD();
@@ -29,6 +30,7 @@ app.use("/api", authRoutes);
 app.use("/api/channel", channelRoutes);
 app.use("/api/setting", settingRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/messages",directMessageRoutes) 
 
 // Crea un servidor HTTP usando Express
 // Crea el servidor HTTP utilizando el servidor Express

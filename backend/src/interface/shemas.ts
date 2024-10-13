@@ -21,7 +21,6 @@ const channelDetailsSchema = Joi.object({
 });
 
 const channelUpdateSchema = Joi.object({
-    isActivated: Joi.boolean().optional(),
     description: Joi.string().min(10).max(100).optional(),
     title: Joi.string().min(3).max(30).optional(),
     avatarUrl: Joi.string().uri().optional(),

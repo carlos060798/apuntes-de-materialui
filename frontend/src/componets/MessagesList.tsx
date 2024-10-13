@@ -1,35 +1,4 @@
 
-/*
-import React from 'react';
-
-interface Message {
-  username: string;
-  text: string;
-}
-
-interface MessagesListProps {
-  messages: Message[];
-}
-
-const MessagesList: React.FC<MessagesListProps> = ({ messages }) => {
-  const randomColor = () => {
-    const colors = ['text-primary', 'text-danger', 'text-warning', 'text-success', 'text-info'];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
-
-  return (
-    <div className="messages-list">
-    <p>
-      prueba
-    </p>
-    </div>
-  );
-};
-
-export default MessagesList;
-*/
-
-import React from 'react';
 
 const MessagesList = ({ messages = [] }) => {
   return (

@@ -1,6 +1,9 @@
+
+
 import { Request, Response } from "express";
 import Channel from "../Data/models/chanel";
 import User from "../Data/models/user";
+import { channel } from "node:diagnostics_channel";
 
 class ChannelController {
   public static async  createChannel(req: Request, res: Response) {
@@ -20,27 +23,20 @@ class ChannelController {
 
     // Simulate a database call to fetch the channel data
     try {
-      const channelData = await Channel.findById(channelId);
+      const canal= await Channel.findById(channelId).populate("user", "username");
 
-      if (!channelData) {
+      if (!canal) {
         return res.status(404).json({ error: "Channel not found" });
       }
 
-      const userchanel = await User.findOne(
-        { channel: channelId },
-        { username: 1 }
-      );
-      const isOnline = false;
-      const streamUrl = "http";
+     
       return res.status(200).send({
-        id: channelData._id,
-        title: channelData.title,
-        description: channelData.description,
-        avatarUrl: channelData.avatarUrl,
-        username: userchanel ? userchanel.username : "Unknown",
-        isActivated: channelData.isActivated,
-        isOnline,
-        streamUrl,
+        id: canal?._id,
+        isActivated: canal?.isActivated,
+        title: canal?.title,
+        description: canal?.description,
+        avatarUrl: canal?.avatarUrl,
+        user: canal?.user?.username // Solo devuelve el username
       });
     } catch (error) {
       res.status(500).json({ error: "Failed to retrieve channel" });
@@ -50,7 +46,7 @@ class ChannelController {
   public static async updateChannel(req: Request, res: Response) {
       const userid= req.user?._id;
       const channelId = req.params.idchannel;
-      const { title, description, avatarUrl,isActivated } = req.body;
+      const { title, description, avatarUrl} = req.body;
       try {
         const channelData = await Channel.findById(channelId);
         if (!channelData) {
@@ -66,7 +62,6 @@ class ChannelController {
            title: title || channelData.title,
            description: description || channelData.description,
            avatarUrl: avatarUrl || channelData.avatarUrl,
-           isActivated:isActivated || channelData.isActivated,
         }
 
         await channelData.updateOne(updatedChannel)
@@ -76,25 +71,48 @@ class ChannelController {
         }
   }
 
-  public static async getChanels(req: Request, res: Response) {
+  public static async getAllChannels(req: Request, res: Response) {
     try {
-      // Consulta todos los canales y llena el campo de usuario con sus datos relacionados
-      const canales = await Channel.find().populate("user", "username email");
+      // Consulta todos los canales y llena solo el campo "username" del usuario
+      const canales = await Channel.find().populate("user", "username");
 
-      // Formatea los canales según la estructura requerida
-      const canalesFormateados = canales.map((canal) => {
-        return {
-          id: canal._id,
-          title: canal.title,
-          avatarUrl: canal.avatarUrl,
-          username: canal.user?.username || "Unknown",
-          isOnline: false,
-        };
-      });
+      // Mapeo para devolver solo los campos solicitados
+      const canalesFormat = canales.map((canal) => ({
+        id: canal._id,
+        isActivated: canal.isActivated,
+        title: canal.title,
+        description: canal.description,
+        avatarUrl: canal.avatarUrl,
+        user: canal.user.username, // Solo devuelve el username
+      }));
 
-      return res.send(canalesFormateados);
+      return res.send(canalesFormat);
     } catch (error) {
       return res.status(500).send({ msg: "Error al obtener los canales", error });
+    }
+  }
+
+  // Método para obtener los canales donde el usuario solicitante sea el propietario
+  public static async getUserChannels(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id; // Asumiendo que el ID del usuario está disponible en req.user
+
+      // Consulta los canales donde el campo "user" coincida con el usuario solicitante
+      const canales = await Channel.find({ user: userId }).populate("user", "username");
+
+      // Mapeo para devolver solo los campos solicitados
+      const canalesFormat = canales.map((canal) => ({
+        isActivated: canal.isActivated,
+        id: canal._id,
+        title: canal.title,
+        description: canal.description,
+        avatarUrl: canal.avatarUrl,
+        user: canal.user.username, // Solo devuelve el username
+      }));
+
+      return res.send(canalesFormat);
+    } catch (error) {
+      return res.status(500).send({ msg: "Error al obtener los canales del usuario", error });
     }
   }
 
@@ -167,9 +185,48 @@ class ChannelController {
     }
   }
 
+ // metodos para chat en los canales
 
+ public static async getChannelMessages (req: Request, res: Response)  {
+    const { channelId } = req.params;
+    try {
+        const channel = await Channel.findById(channelId).populate('messages');
+        if (!channel) {
+            return res.status(404).json({ error: "Channel not found" });
+        }
+        return res.json({ messages: channel.messages });
+    } catch (error) {
+        console.error("Error fetching channel messages", error);
+        return res.status(500).json({ error: "Error fetching channel messages" });
+    }
+};
+
+// Enviar un mensaje en un canal
+public static async sendChannelMessage (req: Request, res: Response)  {
+    const { channelId } = req.params;
+    const { content, author } = req.body;
+
+    try {
+        const channel = await Channel.findById(channelId);
+        if (!channel) {
+            return res.status(404).json({ error: "Channel not found" });
+        }
+
+        const newMessage = new Message({ content, author });
+        await newMessage.save();
+
+        channel.messages.push(newMessage._id);
+        await channel.save();
+
+        emitChatMessage(newMessage, channelId);
+        return res.status(201).json(newMessage);
+    } catch (error) {
+        console.error("Error sending channel message", error);
+        return res.status(500).json({ error: "Error sending channel message" });
+    }
+};
+  
 
 }
-
 
 export default ChannelController;

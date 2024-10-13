@@ -205,16 +205,20 @@ try{
 
 public static async getUser(req: Request, res: Response) {
     const userid = req.user?._id;
+
     try {
-        const user = await User.findById( userid ).populate
-        return res.send({
-            msg: "Usuario obtenido correctamente",
+        const user = await User.findById(userid)
+        .select('-password -_id')  // Excluye password y _id
+        .populate('channel')
+        .populate('followedChannels')
+        .populate('followers')
+        .populate('following');
+        return res.send(
             user
-        })
+        )
     } catch (error) {
         return res.status(500).send({ message: "Error al obtener el usuario", error });
     }
-}
-}
+}}
 
 export default AuthController;

@@ -1,5 +1,6 @@
 
 export interface Ichannel{
+        isActivated: any;
 
         _id: string; 
         id?: string;              

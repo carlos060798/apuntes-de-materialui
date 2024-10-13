@@ -1,29 +1,14 @@
-import mongoose from 'mongoose';
-const privateMessageSchema = new mongoose.Schema({
-    participants: [
-        { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'User' 
-        }
-    ],
-    messages: {
-        type: [{
-            author: { 
-                type: mongoose.Schema.Types.ObjectId, 
-                ref: 'User', 
-                required: true 
-            },
-            content: { 
-                type: String, 
-                required: true 
-            },
-            date: { 
-                type: Date, 
-                default: Date.now 
-            }
-        }],
-        default: []
-    }
+import mongoose, { Schema, Document } from "mongoose";
+import { IMessage } from "./mesagge";
+
+export interface IDirectMessage extends Document {
+    users: string[];
+    messages: IMessage[];
+}
+
+const directMessageSchema: Schema = new mongoose.Schema({
+    users: [{ type: String, required: true }],
+    messages: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
 });
 
-export default mongoose.model('PrivateMessage', privateMessageSchema);
+export default mongoose.model<IDirectMessage>("DirectMessage", directMessageSchema);

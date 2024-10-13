@@ -12,8 +12,6 @@ export const  loginUser= async (dataLogin:IUserLogin) => {
         const {data}= await api.post("/login", dataLogin);
         console.log(data);
         localStorage.setItem('token', data.token);
-        localStorage.setItem('username', data.username);
-
         return data;
     } catch (error) {
         console.error("Error during login", error);
@@ -46,6 +44,70 @@ export const  updateUserData = async (dataUser:IUserUpdate) => {
         return data;
     } catch (error) {
         console.error("Error during update user data", error);
+        throw error;
+    }
+} 
+
+
+export const  getUserData = async () => {
+    const  token = localStorage.getItem("token");
+    if (!token) {
+        console.error("No token found in localStorage");
+        return;
+    }
+    try {
+        const {data} = await api.get("/userdetails", {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log("User data:", data);
+        return data;
+    } catch (error) {
+        console.error("Error during getUserData", error);
+        throw error;
+    }
+} 
+
+export const  getUsers = async () => {
+    try {
+        const {data} = await api.get("/users");
+        console.log("Users:", data);
+        return data;
+    } catch (error) {
+        console.error("Error during getUsers", error);
+        throw error;
+    }
+}
+
+export const  unfollowUser = async (userId:string) => {
+    const  token = localStorage.getItem("token");
+    if (!token) {
+        console.error("No token found in localStorage");
+        return;
+    }
+    try {
+        const {data} = await api.delete(`/follow/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return data;
+    } catch (error) {
+        console.error("Error during unfollow user", error);
+        throw error;
+    }
+}
+
+export const  followUser = async (userId:string) => {
+    const  token = localStorage.getItem("token");
+    if (!token) {
+        console.error("No token found in localStorage");
+        return;
+    }
+    try {
+        const {data} = await api.post("/follow", { userId }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return data;
+    } catch (error) {
+        console.error("Error during follow user", error);
         throw error;
     }
 }

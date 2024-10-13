@@ -1,5 +1,3 @@
-
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getChannelsById } from "../api/channel.api";
@@ -7,19 +5,15 @@ import Loader from "./Loader";
 import { useState } from "react";
 import SettingChannelPage from "./SettingChannel";
 import { connectwithSocketServer } from "../sockets-client/socketCors";
-import ChatApp from "./Chat";
-
-
-
 
 function Channel() {
   const { id } = useParams<{ id: string }>();
   connectwithSocketServer();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["channel", id],
+    queryKey: ["channel", id], // Clave que incluye el id
     queryFn: () => getChannelsById(id as string),
-    enabled: !!id, // Solo ejecuta la query si id tiene valor
+    enabled: !!id,
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,26 +44,47 @@ function Channel() {
           </div>
           <p className="text-muted mb-1">{data.description}</p>
           <p className="mb-1">
-            <strong>Usuario:</strong> {data.username}
+            <strong>Usuario:</strong> {data.user}
           </p>
           <p className="mb-1">
             <strong>Estado:</strong>{" "}
-            <span className={`badge ${data.isOnline ? "bg-success" : "bg-danger"}`}>
+            <span
+              className={`badge ${
+                data.isActivated ? "bg-success" : "bg-danger"
+              }`}
+            >
               {data.isOnline ? "Online" : "Offline"}
             </span>
           </p>
-          <p className="mb-0">
-            <strong>Stream:</strong>{" "}
-            <a href={data.streamUrl} target="_blank" rel="noopener noreferrer">
-              {data.streamUrl}
-            </a>
-          </p>
         </div>
       </div>
-     
-<ChatApp channelid={id} />
 
-      <SettingChannelPage data={data}channelId={id!} isModalOpen={isModalOpen} closeModal={closeModal} />
+      {isModalOpen && (
+        <div className="modal fade show d-block" tabIndex={-1} role="dialog">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Configuración del Canal</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={closeModal}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <SettingChannelPage
+                  data={data}
+                  channelId={id!}
+                  closeModal={closeModal}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isModalOpen && <div className="modal-backdrop fade show"></div>}
     </div>
   );
 }
