@@ -68,9 +68,9 @@ export const  getUserData = async () => {
 } 
 
 export const  getUsers = async () => {
+    const  token = localStorage.getItem("token");
     try {
-        const {data} = await api.get("/users");
-        console.log("Users:", data);
+        const {data} = await api.get("/users", {    headers: { Authorization: `Bearer ${token}` }});
         return data;
     } catch (error) {
         console.error("Error during getUsers", error);
@@ -85,7 +85,7 @@ export const  unfollowUser = async (userId:string) => {
         return;
     }
     try {
-        const {data} = await api.delete(`/follow/${userId}`, {
+        const {data} = await api.post("/unfollow", { userfollow:userId }, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return data;
@@ -102,7 +102,7 @@ export const  followUser = async (userId:string) => {
         return;
     }
     try {
-        const {data} = await api.post("/follow", { userId }, {
+        const {data} = await api.post("/follow", { userfollow:userId }, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return data;

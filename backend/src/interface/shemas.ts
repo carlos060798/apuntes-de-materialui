@@ -33,7 +33,8 @@ const passwordUpdateShema = Joi.object({
 
 const updateUserSchema = Joi.object({
     username: Joi.string().min(3).max(30),
-    email: Joi.string().email()
+    email: Joi.string().email(),
+    avatarurl: Joi.string().uri().optional()
 });
 
 const channelShema = Joi.object({

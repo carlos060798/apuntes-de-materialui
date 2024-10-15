@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    avatarurl: {
+        type: String,
+        default: "https://via.placeholder.com/150"
+    },
 
     channel: {
         type: mongoose.Schema.Types.ObjectId,

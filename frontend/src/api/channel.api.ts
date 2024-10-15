@@ -60,8 +60,10 @@ export const getChannelsById = async (id:string) => {
 } 
 
 export const getChannels = async () => {
-
-    const  {data}= await api.get("/");
+    const token = localStorage.getItem("token");
+    const  {data}= await api.get("/",{
+        headers: { Authorization: `Bearer ${token}` }
+    });
     console.log("Channels:", data);
 
     return data;

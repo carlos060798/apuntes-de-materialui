@@ -77,7 +77,7 @@ class AuthController {
 
     public static async uptdateUser(req: Request, res: Response) {
         const userid = req.user?._id
-        const { email, username } = req.body;
+        const { email, username,avatarurl } = req.body;
 
         const user = await User.exists({ email });
         if (user) {
@@ -88,7 +88,7 @@ class AuthController {
 
         try {
 
-            const userupdate = await User.findByIdAndUpdate(userid, { email, username }, { new: true });
+            const userupdate = await User.findByIdAndUpdate(userid, { email, username,avatarurl }, { new: true });
 
             return res.send({ msg: "Usuario actualizado correctamente" });
         }
@@ -188,20 +188,36 @@ public static async unfollowUser(req: Request, res: Response) {
     }
 }
 
-public  static async getUsers(req: Request, res: Response) {
-      
-try{
-    const users = await User.find().populate('channel').populate('followedChannels').populate('followers').populate('following');
-    return res.send({
-        msg: "Usuarios obtenidos correctamente",
-        users
-    })
 
-} catch (error) {
-    return  res.status(500).send({ message: "Error al obtener el usuario", error });
-}
 
-}
+public static async getUsers(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id; // Obtiene el ID del usuario que hace la consulta
+  
+      // Filtra todos los usuarios, excluyendo al usuario que hace la consulta
+      const users = await User.find({ _id: { $ne: userId } })
+        .populate('channel')
+        .populate('followedChannels')
+        .populate('followers')
+        .populate('following');
+  
+      // Procesa los usuarios excluyendo '_id', 'password' y otros datos sensibles
+      const filteredUsers = users.map((user: any) => {
+        const {  password, ...rest } = user.toObject(); // Excluye '_id' y 'password'
+        return rest;
+      });
+  
+      // Envía la respuesta con los usuarios procesados
+      return res.send({
+        Users: filteredUsers
+      });
+  
+    } catch (error) {
+      return res.status(500).send({ message: "Error al obtener los usuarios", error });
+    }
+  }
+  
+  
 
 public static async getUser(req: Request, res: Response) {
     const userid = req.user?._id;

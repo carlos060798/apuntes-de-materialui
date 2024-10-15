@@ -62,7 +62,7 @@ console.log("console data",data);
 
   if (isLoading) return <Loader />;
 
-  return (
+  if (data && data.length > 0) return (
     <div className="container mt-4">
       <button className="btn btn-primary mb-4" onClick={openModal}>
         <i className="bi bi-plus-circle me-2"></i>Crear nuevo canal

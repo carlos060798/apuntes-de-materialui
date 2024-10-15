@@ -71,11 +71,19 @@ class ChannelController {
         }
   }
 
+ 
   public static async getAllChannels(req: Request, res: Response) {
     try {
-      // Consulta todos los canales y llena solo el campo "username" del usuario
-      const canales = await Channel.find().populate("user", "username");
-
+      const userId = req.user?._id; // Verifica que el usuario esté autenticado
+  
+      if (!userId) {
+        return res.status(401).send({ msg: "Usuario no autenticado" });
+      }
+  
+      // Consulta todos los canales, excluyendo aquellos cuyo propietario sea el usuario autenticado
+      const canales = await Channel.find({ user: { $ne: userId } })
+        .populate("user", "username"); // Poblar solo el campo "username" del usuario
+  
       // Mapeo para devolver solo los campos solicitados
       const canalesFormat = canales.map((canal) => ({
         id: canal._id,
@@ -85,13 +93,13 @@ class ChannelController {
         avatarUrl: canal.avatarUrl,
         user: canal.user.username, // Solo devuelve el username
       }));
-
-      return res.send(canalesFormat);
+  
+      return res.status(200).send(canalesFormat);
     } catch (error) {
+      console.error("Error al obtener los canales:", error);
       return res.status(500).send({ msg: "Error al obtener los canales", error });
     }
   }
-
   // Método para obtener los canales donde el usuario solicitante sea el propietario
   public static async getUserChannels(req: Request, res: Response) {
     try {

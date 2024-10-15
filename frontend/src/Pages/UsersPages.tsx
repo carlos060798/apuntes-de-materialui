@@ -27,7 +27,6 @@ function UserPages() {
     <div>
       <h4>Detalles de los Usuarios</h4>
       <ul>
-        {/* Renderiza la lista de usuarios */}
         {users?.map((user: any) => (
           <li key={user.id} style={{ marginBottom: "20px", borderBottom: "1px solid #ccc", paddingBottom: "10px" }}>
             <p>
@@ -42,8 +41,6 @@ function UserPages() {
             <p>
               <strong>Dirección:</strong> {user.address}
             </p>
-
-            {/* Ejemplo de un array dentro de los datos de usuario */}
             {user.friends && (
               <>
                 <p>
@@ -59,7 +56,6 @@ function UserPages() {
               </>
             )}
 
-            {/* Otro ejemplo con un array */}
             {user.projects && (
               <>
                 <p>
@@ -74,8 +70,6 @@ function UserPages() {
                 </ul>
               </>
             )}
-
-            {/* Aquí podrías agregar más arrays si existen */}
           </li>
         ))}
       </ul>

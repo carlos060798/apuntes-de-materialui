@@ -11,7 +11,7 @@ const  router = Router();
 
 // GET /api/channel
 
-router.get('/', ChannelController.getAllChannels);
+router.get('/',authenticate,ChannelController.getAllChannels);
 router.get('/userchannels', authenticate, ChannelController.getUserChannels);
 router.get('/:idchannel',ChannelController.getChannel);
 router.get('/follow/channels',authenticate,ChannelController.channelsLikes);

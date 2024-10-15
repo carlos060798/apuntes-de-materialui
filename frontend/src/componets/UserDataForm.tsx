@@ -15,6 +15,7 @@ const UserDataForm = () => {
     defaultValues: {
       username: '',
       email: '',
+      avatarurl: '',
     },
   });
 
@@ -63,6 +64,16 @@ const UserDataForm = () => {
             })}
           />
           {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label htmlFor="avatarurl" className="form-label">URL de Avatar</label>
+          <input
+            type="text"
+            className={`form-control ${errors.avatarurl? 'is-invalid' : ''}`}
+            id="avatarurl"
+            {...register('avatarurl')}
+          />
+          {errors.avatarurl && <div className="invalid-feedback">{errors.avatarurl.message}</div>}
         </div>
         <button type="submit" className="btn btn-primary w-100">Actualizar Datos</button>
       </form>

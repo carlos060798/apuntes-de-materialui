@@ -33,7 +33,9 @@ console.log("data de user",user);
       <div className="card shadow-sm">
         <div className="card-header d-flex align-items-center">
           <img
-            src="https://via.placeholder.com/80"
+            src={
+              user.avatarurl ||
+              "https://via.placeholder.com/80"}
             alt="Avatar del Usuario"
             className="rounded-circle me-3"
           />
