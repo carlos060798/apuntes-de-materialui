@@ -49,7 +49,7 @@ const useridShema = Joi.object({
 
 const commentShema = Joi.object({
     content: Joi.string().min(1).max(1000).required(),
-    channel: Joi.string().required()
+    channelId: Joi.string().required()
 })
 
 const commentUpdateShema = Joi.object({

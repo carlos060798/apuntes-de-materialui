@@ -24,7 +24,7 @@ function DashboardPage() {
 
   if (isLoading) return <Loader />;
 
-  if (data && data.length > 0)
+
     return (
       <div className="container mt-4">
         <button className="btn btn-primary mb-4" onClick={openModal}>

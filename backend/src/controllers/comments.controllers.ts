@@ -30,17 +30,21 @@ class commentsController {
     public static async createComment(req: Request, res: Response) {
         const author = req.user?._id;
         try {
-            const { content, channel } = req.body;
-            const newComment = new Comment({ content, channel, author });
+            const { content, channelId
+            } = req.body;
+            const newComment = new Comment({ content,channel: channelId
+                , author });
             await newComment.save();
 
             // Agregar el comentario al arreglo de comentarios del canal
-            await Channel.findByIdAndUpdate(channel, {
+            await Channel.findByIdAndUpdate(channelId
+                , {
                 $push: { comments: newComment._id }
             });
 
             return res.send({ msg: "Comentario creado correctamente", newComment });
         } catch (error) {
+            console.log(error);
             res.status(500).send({ message: "Error al crear el comentario", error });
         }
     }

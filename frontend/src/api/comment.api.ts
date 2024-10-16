@@ -10,8 +10,9 @@ interface Comment {
 }
 
 export const createComment = async (commentData: Comment) => {
+    const token = localStorage.getItem("token");
     try{
-        const {data}=await commentApi.post("/", commentData);
+        const {data}=await commentApi.post("/", commentData, {headers: {Authorization: `Bearer ${token}`}});
         return data;}
     catch(error){
         console.error("Error during comment creation", error);
@@ -20,8 +21,9 @@ export const createComment = async (commentData: Comment) => {
 }
 
 export const updateComment = async ({ commentId, commentData }: { commentId: string, commentData: Comment }) => {
-     try{
-       const {data}= await commentApi.put(`/${commentId}`, commentData);
+   const token = localStorage.getItem("token");
+    try{
+       const {data}= await commentApi.put(`/${commentId}`, commentData, {headers: {Authorization: `Bearer ${token}`}});
         return data;
 } catch(error){
     console.error("Error during comment update", error);
@@ -30,8 +32,10 @@ export const updateComment = async ({ commentId, commentData }: { commentId: str
 }}
 
 export const deleteComment = async (commentId: string) => {
+    const token = localStorage.getItem("token");
+
     try{
-    const {data}= await commentApi.delete(`/${commentId}`);
+    const {data}= await commentApi.delete(`/${commentId}`, {headers: {Authorization: `Bearer ${token}`}});
     return data;
 
 } catch(error){

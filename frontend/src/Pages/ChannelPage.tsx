@@ -6,12 +6,16 @@ import { Ichannel } from "../interface/channel-interface";
 import Loader from "../componets/Loader";
 import toast from "react-hot-toast"; 
 import { useState } from "react";
+
+import { useNavigate } from "react-router-dom";
 import CreateChannelModal from '../componets/ModalChanel';
 
 function ChannelsPage() {
 
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
+  const queryClient = useQueryClient();
+ 
   const { data, isLoading } = useQuery({
     queryKey: ["channels"],
     queryFn: getChannels,
@@ -52,6 +56,10 @@ function ChannelsPage() {
 
   const handleUnfollow = (channelId: string) => {
     unfollow(channelId);
+  };
+ 
+  const handleDetailChannel = (channelId: string) => {
+    navigate(`/channel/${channelId}`);
   };
 
  
@@ -111,6 +119,14 @@ console.log("console data",data);
                     </button>
 
                     {/* Detalles del canal */}
+                    <button
+                        className="btn btn-primary"
+                        onClick={() =>
+                          handleDetailChannel(channel.id as string)
+                        }
+                      >
+                        <i className="bi bi-info-circle-fill"></i>
+                      </button>
               
                   </div>
                 </div>
