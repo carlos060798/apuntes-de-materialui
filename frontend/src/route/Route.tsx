@@ -15,6 +15,7 @@ import ChannelsPage from "../Pages/ChannelPage";
 import UserPage from "../Pages/UserPage";
 import ChannelRoomPage from "../Pages/ChatRoomPage";
 import ProfileUser from "../componets/UserDetails";
+import ChatRoom from "../componets/ChatRoom";
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ element }: { element: ReactNode }) => {
@@ -52,6 +53,8 @@ export default function Router() {
           <Route path="/users" element={<UserPage/>} />
           <Route path="/profile" element={<ProfileUser/>} />
           <Route path="/room-chat" element={<ChannelRoomPage/>} />
+          <Route path="/channel/:id/chat" element={<ChatRoom />} /> {/* Ruta para la sala de chat */}
+
           
         </Route>
         <Route path="*" element={<PageNotFound />} />

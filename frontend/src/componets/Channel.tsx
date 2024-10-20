@@ -5,8 +5,10 @@ import Loader from "./Loader";
 import { useState } from "react";
 import SettingChannelPage from "./SettingChannel";
 import CommentSection from "./CommentsList";
+import { useNavigate } from "react-router-dom";
 
 function Channel() {
+  const navigate = useNavigate();  // Para redirigir a otras páginas
   const { id } = useParams<{ id: string }>();
   const { data: channelData, isLoading, error } = useQuery({
     queryKey: ["channel", id],
@@ -28,7 +30,12 @@ function Channel() {
 
   if (isLoading) return <Loader />;
   if (error) return <p>Error al cargar el canal.</p>;
-  if (!channelData) return <p>No se encontró el canal.</p>;
+  if (!channelData) return <p>No se encontró el canal.</p>; 
+
+    // Función para redirigir a la sala de chat grupal
+    const redirectToChatRoom = () => {
+      navigate(`/channel/${id}/chat`);
+    };
 
   return (
     <div className="container mt-4">
@@ -63,7 +70,9 @@ function Channel() {
           </p>
         </div>
       </div>
-
+      <button className="btn btn-success mb-3" onClick={redirectToChatRoom}>
+        Ingresar a la Sala de Chat Grupal
+      </button>
       <button className="btn btn-primary mb-3" onClick={toggleComments}>
         {showComments ? "Ocultar Comentarios" : "Mostrar Comentarios"}
       </button>

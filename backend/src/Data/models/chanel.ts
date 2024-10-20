@@ -28,7 +28,9 @@ const channelSchema = new mongoose.Schema({
     comments: { 
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }], 
         default: [] 
-    }
+    },
+    isChatClosed: { type: Boolean, default: false }, // Indica si el chat del canal está cerrado
+
 });
 
 export default mongoose.model('Channel', channelSchema);

@@ -1,44 +1,74 @@
 import { Request, Response } from "express";
-import  DirectMessage from "../Data/models/PrivateMessage";
-import { emitDirectMessage } from '../io/Server.io';
+import DirectMessage from "../Data/models/PrivateMessage";
 import Message from "../Data/models/mesagge";
 
-// Obtener historial de mensajes directos
+// Obtener mensajes directos entre usuarios
 export const getDirectMessages = async (req: Request, res: Response) => {
-    const { userId1, userId2 } = req.params;
-    try {
-        const conversation = await DirectMessage.findOne({ users: { $all: [userId1, userId2] } }).populate('messages');
-        if (!conversation) {
-            return res.status(404).json({ error: "No conversation found" });
-        }
-        return res.json({ messages: conversation.messages });
-    } catch (error) {
-        console.error("Error fetching direct messages", error);
-        return res.status(500).json({ error: "Error fetching direct messages" });
-    }
+  const userId1 = req.user?._id;
+  const {  userId2 } = req.params;
+
+  try {
+    const directMessages = await DirectMessage.find({
+      users: { $all: [userId1, userId2] },
+    }).populate("messages");
+
+    res.status(200).json(directMessages);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching direct messages" });
+  }
 };
 
-// Enviar un mensaje directo
+// Enviar mensaje directo entre dos usuarios
 export const sendDirectMessage = async (req: Request, res: Response) => {
-    const { userId1, userId2 } = req.params;
-    const { content, author } = req.body;
+    const userId1 = req.user?._id;
+  const { userId2 } = req.params;
+  const { author, content } = req.body;
+
+  try {
+    const newMessage = new Message({ author, content });
+    await newMessage.save();
+
+    let directMessage = await DirectMessage.findOne({
+      users: { $all: [userId1, userId2] },
+    });
+
+    if (!directMessage) {
+      directMessage = new DirectMessage({
+        users: [userId1, userId2],
+        messages: [newMessage._id],
+      });
+    } else {
+      directMessage.messages.push(newMessage._id );
+    }
+
+    await directMessage.save();
+
+    res.status(201).json(newMessage);
+  } catch (error) {
+    res.status(500).json({ error: "Error sending direct message" });
+  }
+};
+
+
+export const deleteDirectMessage = async (req: Request, res: Response) => {
+    const { messageId } = req.params;
 
     try {
-        let conversation = await DirectMessage.findOne({ users: { $all: [userId1, userId2] } });
-        if (!conversation) {
-            conversation = new DirectMessage({ users: [userId1, userId2], messages: [] });
+        const message = await Message.findById(messageId);
+
+        if (!message) {
+            return res.status(404).json({ error: "Message not found" });
         }
 
-        const newMessage = new Message({ content, author });
-        await newMessage.save();
+        await message.deleteOne();
 
-        conversation.messages.push(newMessage._id);
-        await conversation.save();
+        await DirectMessage.updateMany(
+            { messages: messageId },
+            { $pull: { messages: messageId } }
+        );
 
-        emitDirectMessage(newMessage, userId1, userId2);
-        return res.status(201).json(newMessage);
+        res.status(200).json({ message: "Message deleted successfully" });
     } catch (error) {
-        console.error("Error sending direct message", error);
-        return res.status(500).json({ error: "Error sending direct message" });
+        res.status(500).json({ error: "Error deleting message" });
     }
 };

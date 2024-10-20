@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 export interface IMessage extends mongoose.Document {
     author: string;
-    content: string;
+    message: string;
     date: Date;
 }
 

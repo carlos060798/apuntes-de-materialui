@@ -3,8 +3,7 @@
 import { Request, Response } from "express";
 import Channel from "../Data/models/chanel";
 import User from "../Data/models/user";
-import { channel } from "node:diagnostics_channel";
-
+import Message from "../Data/models/mesagge";
 class ChannelController {
   public static async  createChannel(req: Request, res: Response) {
     const user = req.user?._id;
@@ -195,45 +194,99 @@ class ChannelController {
 
  // metodos para chat en los canales
 
- public static async getChannelMessages (req: Request, res: Response)  {
-    const { channelId } = req.params;
-    try {
-        const channel = await Channel.findById(channelId).populate('messages');
-        if (!channel) {
-            return res.status(404).json({ error: "Channel not found" });
-        }
-        return res.json({ messages: channel.messages });
-    } catch (error) {
-        console.error("Error fetching channel messages", error);
-        return res.status(500).json({ error: "Error fetching channel messages" });
+// Enviar mensaje en un canal
+public  static async  sendChannelMessage  (req: Request, res: Response)  {
+  const author = req.user?._id;
+  const { channelId } = req.params;
+  const {  content } = req.body;
+
+  try {
+    const channel = await Channel.findById(channelId);
+    if (!channel) {
+      return res.status(404).json({ message: "Channel not found" });
     }
+
+    // Verificar si el chat está cerrado
+    if (channel.isChatClosed) {
+      return res.status(403).json({ message: "The chat is closed by the channel owner" });
+    }
+
+    const newMessage = new Message({ author, content });
+    await newMessage.save();
+
+    channel.messages.push(newMessage._id);
+    await channel.save();
+
+    res.status(201).json(newMessage);
+  } catch (error) {
+    res.status(500).json({ error: "Error sending message" });
+  }
 };
 
-// Enviar un mensaje en un canal
-public static async sendChannelMessage (req: Request, res: Response)  {
-    const { channelId } = req.params;
-    const { content, author } = req.body;
+// Obtener mensajes del canal
+public static async  getChannelMessages (req: Request, res: Response) {
+  const { channelId } = req.params;
 
-    try {
-        const channel = await Channel.findById(channelId);
-        if (!channel) {
-            return res.status(404).json({ error: "Channel not found" });
-        }
-
-        const newMessage = new Message({ content, author });
-        await newMessage.save();
-
-        channel.messages.push(newMessage._id);
-        await channel.save();
-
-        emitChatMessage(newMessage, channelId);
-        return res.status(201).json(newMessage);
-    } catch (error) {
-        console.error("Error sending channel message", error);
-        return res.status(500).json({ error: "Error sending channel message" });
+  try {
+    const channel = await Channel.findById(channelId).populate("messages");
+    if (!channel) {
+      return res.status(404).json({ message: "Channel not found" });
     }
+
+    res.status(200).json(channel.messages);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching messages" });
+  }
 };
-  
+
+// Eliminar mensaje del canal
+public  static async deleteChannelMessage (req: Request, res: Response) {
+  const authorId = req.user?._id;
+  const { messageId, channelId } = req.params;
+
+  try {
+    const message = await Message.findById(messageId);
+    if (!message || message.author !== authorId) {
+      return res.status(403).json({ message: "No permission to delete this message" });
+    }
+
+    await message.deleteOne();
+
+    const channel = await Channel.findById(channelId);
+    if (channel) {
+      channel.messages = channel.messages.filter(
+        (msgId) => msgId.toString() !== messageId
+      );
+      await channel.save();
+    }
+
+    res.status(200).json({ message: "Message deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Error deleting message" });
+  }
+};
+
+// Cerrar el chat del canal
+ public static  async  closeChannelChat  (req: Request, res: Response) {
+ const  ownerId = req.user?._id;
+  const { channelId } = req.params;
+
+  try {
+    const channel = await Channel.findById(channelId);
+    if (!channel || channel.user.toString() !== ownerId) {
+      return res.status(403).json({ message: "No permission to close this chat" });
+    }
+
+    channel.isChatClosed = true;
+    await channel.save();
+   
+    return res.send({ message: "Chat closed successfully" });
+  } catch (error) {
+     return res.send({ messaggerror: "Error closing chat", error });
+  }
+};
+
+
 
 }
 
