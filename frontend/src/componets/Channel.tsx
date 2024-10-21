@@ -34,7 +34,7 @@ function Channel() {
 
     // Función para redirigir a la sala de chat grupal
     const redirectToChatRoom = () => {
-      navigate(`/channel/${id}/chat`);
+      navigate(`/channel/${id}/${channelData.user}/chat`);
     };
 
   return (

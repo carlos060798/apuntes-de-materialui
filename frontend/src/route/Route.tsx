@@ -53,7 +53,7 @@ export default function Router() {
           <Route path="/users" element={<UserPage/>} />
           <Route path="/profile" element={<ProfileUser/>} />
           <Route path="/room-chat" element={<ChannelRoomPage/>} />
-          <Route path="/channel/:id/chat" element={<ChatRoom />} /> {/* Ruta para la sala de chat */}
+          <Route path="/channel/:id/:owner/chat" element={<ChatRoom />} /> {/* Ruta para la sala de chat */}
 
           
         </Route>
