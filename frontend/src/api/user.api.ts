@@ -112,3 +112,14 @@ export const  followUser = async (userId:string) => {
         throw error;
     }
 }
+
+export const  getUserById = async (userId:string) => {
+
+    try {
+        const {data} = await api.get(`/user/${userId}`);
+        return data;
+    } catch (error) {
+        console.error("Error during getUserById", error);
+        throw error;
+    }
+}

@@ -3,7 +3,10 @@ import { getUsers, followUser, unfollowUser } from "../api/user.api";
 import toast from "react-hot-toast";
 import Loader from "../componets/Loader";
 
+import { useNavigate } from "react-router-dom";
+
 function UserPage() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // Consulta para obtener usuarios
@@ -47,6 +50,10 @@ function UserPage() {
     unfollow(userId);
   };
 
+  const handleUserDetails = (userId: string) => {
+    navigate(`/user/${userId}`);
+  }
+
   // Muestra el loader mientras se cargan los datos
   if (isLoading) return <Loader />;
   
@@ -83,6 +90,12 @@ function UserPage() {
                       onClick={() => handleUnfollow(user._id)}
                     >
                       <i className="bi bi-person-dash-fill me-1"></i> 
+                    </button>
+                    <button
+                      className="btn btn-link"
+                      onClick={() => handleUserDetails(user._id)}
+                    >
+                      <i className="bi bi-person-lines-fill me-1"></i>
                     </button>
                   </div>
                 </div>
