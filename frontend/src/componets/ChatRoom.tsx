@@ -137,7 +137,7 @@ const ChatRoom = () => {
 
 export default ChatRoom;
 
-*/
+
 
 import { useState } from "react";
 import { useParams } from "react-router-dom";
@@ -248,7 +248,90 @@ return(
         </button>
       </div>
     </div>
-  );*/
+  );
+};
+
+export default ChatRoom;*/
+
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useSocket } from "../sockets-client/socketCors";
+import { useNavigate } from "react-router-dom";
+
+const ChatRoom = () => {
+  const { id: channelId ,title} = useParams<{ id: string ,title:string}>();
+  const { messages, sendMessage, deleteMessage, disconnectFromChannel } = useSocket(channelId!);
+  const [message, setMessage] = useState("");
+  const username = localStorage.getItem("username") || "Anon";
+  const navigate = useNavigate();
+
+  const handleSendMessage = () => {
+    if (message.trim()) {
+      sendMessage(message, username);
+      setMessage("");
+    }
+  };
+
+  const handleDeleteMessage = (messageId: string, author: string) => {
+    deleteMessage(messageId, author);
+  };
+
+  const handleDisconnect = () => {
+    disconnectFromChannel();
+    navigate(-1); 
+  };
+return(
+<div className="container mt-4">
+  <h2 className="mb-4 text-center">Sala de Chat - Canal {title}</h2>
+
+  <div className="chat-box p-3 mb-3" style={{ height: '400px', overflowY: 'scroll', backgroundColor: '#f5f5f5', borderRadius: '10px' }}>
+    {messages.length > 0 ? (
+      messages.map((msg) => (
+        <div key={msg.id} className="message-box mb-2 p-2" style={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
+          <strong className="text-primary">{msg.author}</strong>: {msg.content}
+          {msg.author === username && (
+            <button
+              className="btn btn-danger btn-sm float-end"
+              onClick={() => handleDeleteMessage(msg.id, msg.author)}
+              style={{ marginLeft: '10px' }}
+            >
+              <i className="bi bi-trash"></i>
+            </button>
+          )}
+        </div>
+      ))
+    ) : (
+      <div className="text-center text-muted">No hay mensajes aún.</div>
+    )}
+  </div>
+
+  <div className="message-input d-flex">
+    <input
+      type="text"
+      className="form-control"
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      placeholder="Escribe un mensaje..."
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          handleSendMessage();
+        }
+      }}
+      style={{ flex: 1, borderRadius: '20px', padding: '10px' }}
+    />
+   
+    <button
+      className="btn btn-secondary ms-2"
+      onClick={handleDisconnect}
+      style={{ borderRadius: '20px' }}
+    >
+      Desconectar
+    </button>
+  </div>
+</div>
+
+)
+
 };
 
 export default ChatRoom;

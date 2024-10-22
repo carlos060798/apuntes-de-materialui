@@ -134,4 +134,18 @@ export const updateChannel = async (dataupdate:any) => {
         console.error("Error during updateChannel", error);
         throw error;
     }
-};
+}; 
+
+export const deleteChannel = async (id:string) => {
+    const token = localStorage.getItem("token");
+    try{
+        const {data}= await api.delete(`/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log("Canal eliminado:", data);
+        return data;
+    } catch (error) {
+        console.error("Error during deleteChannel", error);
+        throw error;    
+    }
+}

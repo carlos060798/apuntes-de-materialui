@@ -82,7 +82,7 @@ function CommentSection({ channelId }: CommentSectionProps) {
               </div>
               <div className="col">
                 <strong className="text-dark">{comment.author.username}</strong>
-                <p className="mb-1 text-muted small">{new Date(comment.createdAt).toLocaleString()}</p>
+                <p className="mb-1 text-muted small">{new Date(comment.date).toLocaleString()}</p>
                 <div className="mb-2">
                   {editingCommentId === comment._id ? (
                     <form onSubmit={handleUpdateComment}>

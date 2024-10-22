@@ -194,98 +194,23 @@ class ChannelController {
 
  // metodos para chat en los canales
 
-// Enviar mensaje en un canal
-public  static async  sendChannelMessage  (req: Request, res: Response)  {
-  const author = req.user?._id;
-  const { channelId } = req.params;
-  const {  content } = req.body;
-
+ public static async deleteChannel(req: Request, res: Response) {
+  const userid= req.user?._id;
+  const channelId = req.params.idchannel;
   try {
-    const channel = await Channel.findById(channelId);
-    if (!channel) {
-      return res.status(404).json({ message: "Channel not found" });
+    const channelData = await Channel.findById(channelId);
+    if (!channelData) {
+      return res.status(404).json({ error: "Channel not found" });
     }
-
-    // Verificar si el chat está cerrado
-    if (channel.isChatClosed) {
-      return res.status(403).json({ message: "The chat is closed by the channel owner" });
+    if (channelData.user?.toString() !== userid?.toString()) {
+      return res.status(401).json({ error: "You are not the owner of this channel" });
     }
-
-    const newMessage = new Message({ author, content });
-    await newMessage.save();
-
-    channel.messages.push(newMessage._id);
-    await channel.save();
-
-    res.status(201).json(newMessage);
+    await channelData.deleteOne();
+    return res.status(200).send("Channel deleted successfully");
   } catch (error) {
-    res.status(500).json({ error: "Error sending message" });
+    return res.status(500).json({ error: "Failed to delete channel" });
   }
-};
-
-// Obtener mensajes del canal
-public static async  getChannelMessages (req: Request, res: Response) {
-  const { channelId } = req.params;
-
-  try {
-    const channel = await Channel.findById(channelId).populate("messages");
-    if (!channel) {
-      return res.status(404).json({ message: "Channel not found" });
-    }
-
-    res.status(200).json(channel.messages);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching messages" });
-  }
-};
-
-// Eliminar mensaje del canal
-public  static async deleteChannelMessage (req: Request, res: Response) {
-  const authorId = req.user?._id;
-  const { messageId, channelId } = req.params;
-
-  try {
-    const message = await Message.findById(messageId);
-    if (!message || message.author !== authorId) {
-      return res.status(403).json({ message: "No permission to delete this message" });
-    }
-
-    await message.deleteOne();
-
-    const channel = await Channel.findById(channelId);
-    if (channel) {
-      channel.messages = channel.messages.filter(
-        (msgId) => msgId.toString() !== messageId
-      );
-      await channel.save();
-    }
-
-    res.status(200).json({ message: "Message deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Error deleting message" });
-  }
-};
-
-// Cerrar el chat del canal
- public static  async  closeChannelChat  (req: Request, res: Response) {
- const  ownerId = req.user?._id;
-  const { channelId } = req.params;
-
-  try {
-    const channel = await Channel.findById(channelId);
-    if (!channel || channel.user.toString() !== ownerId) {
-      return res.status(403).json({ message: "No permission to close this chat" });
-    }
-
-    channel.isChatClosed = true;
-    await channel.save();
-   
-    return res.send({ message: "Chat closed successfully" });
-  } catch (error) {
-     return res.send({ messaggerror: "Error closing chat", error });
-  }
-};
-
+} 
 
 
 }
