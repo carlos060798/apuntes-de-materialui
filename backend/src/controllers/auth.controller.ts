@@ -235,6 +235,34 @@ public static async getUser(req: Request, res: Response) {
     } catch (error) {
         return res.status(500).send({ message: "Error al obtener el usuario", error });
     }
-}}
+}
+
+  public static async getUserById(req: Request, res: Response) {
+     try {
+       const userId = req.params.id;
+       const user = await User.findById(userId)
+  .select('-password') // Excluye el campo de contraseña
+  .populate({
+    path: 'followedChannels',
+    select: 'title' // Solo selecciona el título de los canales seguidos
+  })
+  .populate({
+    path: 'followers',
+    select: 'username' // Solo selecciona el nombre de los usuarios que siguen al usuario
+  })
+  .populate({
+    path: 'following',
+    select: 'username' // Solo selecciona el nombre de los usuarios seguidos por el usuario
+  });
+
+       return res.send(
+         user
+       );
+     } catch (error) {
+       return res.status(500).send({ message: "Error al obtener el usuario", error });
+     }
+   }
+  }
+
 
 export default AuthController;
